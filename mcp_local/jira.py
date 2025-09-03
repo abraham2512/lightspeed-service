@@ -169,13 +169,25 @@ def search_jira_issues(project_key: str, search_text: str, max_results: int = 10
         if not issues:
             return "No matching issues found."
         
-        result = {
-            "total_found": len(issues),
-            "issues": issues
-        }
+        # Format the results as a readable list
+        formatted_result = f"Found {len(issues)} matching issues:\n\n"
         
-        import json
-        return json.dumps(result, indent=2)
+        for i, issue in enumerate(issues, 1):
+            formatted_result += f"{i}. **{issue['key']}** - {issue['summary']}\n"
+            formatted_result += f"   - Status: {issue['status']}\n"
+            formatted_result += f"   - Assignee: {issue['assignee']}\n"
+            formatted_result += f"   - Reporter: {issue['reporter']}\n"
+            formatted_result += f"   - Created: {issue['created']}\n"
+            formatted_result += f"   - Updated: {issue['updated']}\n"
+            
+            # Add description if available (truncated for readability)
+            if issue['description']:
+                desc = issue['description'][:200] + "..." if len(issue['description']) > 500 else issue['description']
+                formatted_result += f" {desc}\n"
+            
+            formatted_result += "\n"
+        
+        return formatted_result
         
     except Exception as e:
         logger.error(f"Error in search_jira_issues: {e}")
@@ -199,8 +211,18 @@ def get_jira_issue(issue_key: str) -> str:
         if not issue:
             return f"Issue {issue_key} not found or access denied."
         
-        import json
-        return json.dumps(issue, indent=2)
+        # Format the issue as a readable string
+        formatted_result = f"**{issue['key']}** - {issue['summary']}\n\n"
+        formatted_result += f"**Status:** {issue['status']}\n"
+        formatted_result += f"**Assignee:** {issue['assignee']}\n"
+        formatted_result += f"**Reporter:** {issue['reporter']}\n"
+        formatted_result += f"**Created:** {issue['created']}\n"
+        formatted_result += f"**Updated:** {issue['updated']}\n\n"
+        
+        if issue['description']:
+            formatted_result += f"**Description:**\n{issue['description']}\n"
+        
+        return formatted_result
         
     except Exception as e:
         logger.error(f"Error in get_jira_issue: {e}")
@@ -246,8 +268,14 @@ def list_jira_projects() -> str:
             "projects": project_list
         }
         
-        import json
-        return json.dumps(result, indent=2)
+        # Format the results as a readable list
+        formatted_result = f"Available Jira projects ({len(project_list)} found):\n\n"
+        
+        for i, project in enumerate(project_list, 1):
+            formatted_result += f"{i}. **{project['key']}** - {project['name']}\n"
+            formatted_result += f"   - ID: {project['id']}\n\n"
+        
+        return formatted_result
         
     except Exception as e:
         logger.error(f"Error in list_jira_projects: {e}")
