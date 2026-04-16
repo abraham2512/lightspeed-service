@@ -955,7 +955,15 @@ class DocsSummarizer(QueryHelper):
         skill_content: Optional[str] = None
         skills_rag = config.skills_rag
         if skills_rag is not None:
-            skill, confidence = skills_rag.retrieve_skill(query)
+            skill_query = query
+            if history:
+                history_text = " ".join(
+                    msg.content
+                    for msg in history[-4:]
+                    if isinstance(msg.content, str)
+                )
+                skill_query = f"{history_text} {query}"
+            skill, confidence = skills_rag.retrieve_skill(skill_query)
             if skill is not None:
                 try:
                     skill_content = skill.load_content()

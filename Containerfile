@@ -4,7 +4,7 @@ ARG BUILDER_BASE_IMAGE=registry.redhat.io/rhel9/python-312@sha256:46f883684d02ce
 ARG RUNTIME_BASE_IMAGE=registry.redhat.io/rhel9/python-312-minimal@sha256:804b928fd278fa03c2edf0352378eca73c8efcf665c6e0180e074340b9f22a50
 FROM --platform=linux/amd64 ${LIGHTSPEED_RAG_CONTENT_IMAGE} AS lightspeed-rag-content
 
-FROM --platform=$BUILDPLATFORM ${BUILDER_BASE_IMAGE} AS builder
+FROM ${BUILDER_BASE_IMAGE} AS builder
 ARG BUILDER_DNF_COMMAND=dnf
 ARG APP_ROOT=/app-root
 
@@ -74,6 +74,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 COPY --from=builder /app-root/.venv .venv
 COPY ols ./ols
+COPY skills ./skills
 COPY runner.py /app-root/runner.py
 COPY --from=lightspeed-rag-content /rag/vector_db/ocp_product_docs ./vector_db/ocp_product_docs
 COPY --from=lightspeed-rag-content /rag/embeddings_model ./embeddings_model
