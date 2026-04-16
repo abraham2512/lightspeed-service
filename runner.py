@@ -28,6 +28,11 @@ def load_index():
     config.rag_index  # pylint: disable=W0104, E0606
 
 
+def load_skills():
+    """Load the skills RAG index."""
+    config.skills_rag  # pylint: disable=W0104, E0606
+
+
 if __name__ == "__main__":
     if "--version" in sys.argv:
         print(__version__)
@@ -85,6 +90,9 @@ if __name__ == "__main__":
     # parallel with starting the Uvicorn server
     rag_index_thread = threading.Thread(target=load_index)
     rag_index_thread.start()
+
+    skills_thread = threading.Thread(target=load_skills)
+    skills_thread.start()
 
     # start the quota scheduler
     start_quota_scheduler(config)

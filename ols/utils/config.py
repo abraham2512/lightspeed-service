@@ -231,8 +231,9 @@ class AppConfig:
             return None
 
         skills_dir = Path(skills_config.skills_dir)
+        logger.info("Initializing skills RAG from %s", skills_dir.resolve())
         if not skills_dir.is_dir():
-            logger.warning("Skills directory does not exist: %s", skills_dir)
+            logger.warning("Skills directory does not exist: %s", skills_dir.resolve())
             return None
 
         skills = load_skills_from_directory(skills_dir)
